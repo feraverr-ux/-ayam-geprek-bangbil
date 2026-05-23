@@ -187,7 +187,7 @@ export default function AdminPage() {
                 .map((order, index) => (
 
                   <motion.div
-                    key={index}
+                    key={order.firebaseId}
                     initial={{
                       opacity: 0,
                       y: 20,
@@ -271,25 +271,26 @@ export default function AdminPage() {
     }`}
   >
 
-    {order.status}
+    {order.status || "Menunggu"}
 
   </div>
 
-  <h2 className="text-4xl md:text-5xl font-black text-green-400">
-    Rp{order.total.toLocaleString(
-      "id-ID"
-    )}
-  </h2>
-
+ <h2 className="text-4xl font-black text-orange-400">
+  Rp{(
+    order.total || 0
+  ).toLocaleString(
+    "id-ID"
+  )}
+</h2>
   {/* BUTTON STATUS */}
   <div className="flex flex-wrap gap-3 mt-6 justify-start xl:justify-end">
 
     <button
       onClick={() =>
         updateOrderStatus(
-          order.id,
-          "Menunggu"
-        )
+  order.firebaseId,
+  "Menunggu"
+)
       }
       className={`px-4 py-3 rounded-2xl border transition-all duration-300 text-sm font-semibold ${
         order.status === "Menunggu"
@@ -302,11 +303,11 @@ export default function AdminPage() {
 
     <button
       onClick={() =>
-        updateOrderStatus(
-          order.id,
-          "Diproses"
-        )
-      }
+  updateOrderStatus(
+    order.firebaseId,
+    "Diproses"
+  )
+}
       className={`px-4 py-3 rounded-2xl border transition-all duration-300 text-sm font-semibold ${
         order.status === "Diproses"
           ? "bg-blue-500/20 border-blue-400 text-blue-300"
@@ -319,9 +320,9 @@ export default function AdminPage() {
     <button
       onClick={() =>
         updateOrderStatus(
-          order.id,
-          "Dikirim"
-        )
+  order.firebaseId,
+  "Dikirim"
+)
       }
       className={`px-4 py-3 rounded-2xl border transition-all duration-300 text-sm font-semibold ${
         order.status === "Dikirim"
@@ -335,9 +336,9 @@ export default function AdminPage() {
     <button
       onClick={() =>
         updateOrderStatus(
-          order.id,
-          "Selesai"
-        )
+  order.firebaseId,
+  "Selesai"
+)
       }
       className={`px-4 py-3 rounded-2xl border transition-all duration-300 text-sm font-semibold ${
         order.status === "Selesai"
@@ -356,78 +357,73 @@ export default function AdminPage() {
 
                     </div>
 
-                    {/* ITEMS */}
-                    <div className="p-8">
+                   {/* ITEMS */}
+<div className="p-8">
 
-                      <h3 className="text-2xl font-black mb-6">
-                        Detail Pesanan
-                      </h3>
+  <h3 className="text-2xl font-black mb-6">
+    Detail Pesanan
+  </h3>
 
-                      <div className="space-y-4">
+  <div className="space-y-4">
 
-                        {order.items.map(
-                          (
-                            item,
-                            idx
-                          ) => (
+    {order.items?.map(
+      (
+        item,
+        idx
+      ) => (
 
-                            <div
-                              key={idx}
-                              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 p-5 rounded-2xl bg-white/5 border border-white/10"
-                            >
+        <div
+          key={idx}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 p-5 rounded-2xl bg-white/5 border border-white/10"
+        >
 
-                              <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
 
-                                <img
-                                  src={
-                                    item.image
-                                  }
-                                  alt={
-                                    item.name
-                                  }
-                                  className="w-20 h-20 rounded-2xl object-cover"
-                                />
+            <img
+              src={item?.image || ""}
+              alt={item?.name || ""}
+              className="w-20 h-20 rounded-2xl object-cover"
+            />
 
-                                <div>
+            <div>
 
-                                  <h4 className="text-xl font-bold">
-                                    {
-                                      item.name
-                                    }
-                                  </h4>
+              <h4 className="text-xl font-bold">
+                {item?.name || "-"}
+              </h4>
 
-                                  <p className="text-orange-400 mt-1">
-                                    Rp{item.price.toLocaleString(
-                                      "id-ID"
-                                    )}
-                                  </p>
+              <p className="text-orange-400 mt-1">
+                Rp{(
+                  item?.price || 0
+                ).toLocaleString(
+                  "id-ID"
+                )}
+              </p>
 
-                                </div>
+            </div>
 
-                              </div>
+          </div>
 
-                              <div className="text-left sm:text-right">
+          <div className="text-left sm:text-right">
 
-                                <p className="text-gray-400">
-                                  Quantity
-                                </p>
+            <p className="text-gray-400">
+              Quantity
+            </p>
 
-                                <h4 className="text-3xl font-black text-orange-400">
-                                  x
-                                  {
-                                    item.quantity
-                                  }
-                                </h4>
+            <h4 className="text-3xl font-black text-orange-400">
+              x
+              {item?.quantity || 0}
+            </h4>
 
-                              </div>
+          </div>
 
-                            </div>
-                          )
-                        )}
+        </div>
 
-                      </div>
+      )
+    )}
 
-                    </div>
+  </div>
+
+</div>
 
                   </motion.div>
                 ))}

@@ -5,6 +5,16 @@ import {
   useState,
 } from "react"
 
+import {
+  ref,
+  push,
+  onValue,
+  update,
+} from "firebase/database"
+
+import { database }
+  from "../firebase/config"
+
 const OrderContext =
   createContext()
 
@@ -13,56 +23,146 @@ export function OrderProvider({
 }) {
 
   const [orders, setOrders] =
-    useState(() => {
-
-      const savedOrders =
-        localStorage.getItem(
-          "orders"
-        )
-
-      return savedOrders
-        ? JSON.parse(savedOrders)
-        : []
-    })
+    useState([])
 
   useEffect(() => {
 
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(orders)
+    const ordersRef =
+      ref(database, "orders")
+
+    onValue(
+      ordersRef,
+      (snapshot) => {
+
+        const data =
+          snapshot.val()
+
+        if (data) {
+
+          const loadedOrders =
+  Object.entries(data)
+    .filter(
+      ([id, value]) =>
+        id &&
+        value &&
+        Array.isArray(
+          value.items
+        )
+    )
+    .map(
+      ([firebaseId, value]) => ({
+        firebaseId,
+        ...value,
+      })
     )
 
-  }, [orders])
+          setOrders(
+            loadedOrders
+          )
 
-  const addOrder = (order) => {
+        } else {
 
-    const newOrder = {
-      ...order,
-      status: "Menunggu",
-    }
+          setOrders([])
 
-    setOrders((prev) => [
-      ...prev,
-      newOrder,
-    ])
-  }
+        }
+      }
+    )
 
-  const updateOrderStatus = (
-    id,
-    newStatus
+  }, [])
+
+  const addOrder = async (
+    order
   ) => {
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? {
-              ...order,
-              status: newStatus,
-            }
-          : order
+    const ordersRef = ref(
+      database,
+      "orders"
+    )
+
+    const cleanOrder = {
+      customer:
+        order.customer || "",
+
+      phone:
+        order.phone || "",
+
+      address:
+        order.address || "",
+
+      note:
+        order.note || "",
+
+      paymentMethod:
+        order.paymentMethod || "",
+
+      total:
+        Number(order.total) || 0,
+
+      status: "Menunggu",
+
+      items: Array.isArray(
+        order.items
       )
+        ? order.items.map(
+            (item) => ({
+              name:
+                item.name || "",
+
+              price:
+                Number(
+                  item.price
+                ) || 0,
+
+              quantity:
+                Number(
+                  item.quantity
+                ) || 1,
+
+              image:
+                item.image || "",
+            })
+          )
+        : [],
+    }
+
+    await push(
+      ordersRef,
+      cleanOrder
     )
   }
+
+  const updateOrderStatus =
+    async (
+      firebaseId,
+      newStatus
+    ) => {
+
+      if (!firebaseId)
+        return
+
+      try {
+
+        const orderRef =
+          ref(
+            database,
+            `orders/${firebaseId}`
+          )
+
+        await update(
+          orderRef,
+          {
+            status: newStatus,
+          }
+        )
+
+      } catch (error) {
+
+        console.log(
+          "Update error:",
+          error
+        )
+      }
+    }
 
   return (
 

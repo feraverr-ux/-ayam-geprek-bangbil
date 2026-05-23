@@ -50,17 +50,17 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-3 mb-2">
 
                       <h2 className="text-2xl font-bold">
-                        {order.customer}
+                        {order.customer || "-"}
                       </h2>
 
                       <span className="px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-sm">
-                        {order.status}
+                        {order.status || "Menunggu"}
                       </span>
 
                     </div>
 
                     <p className="text-gray-400">
-                      {order.date}
+                      {order.date || "-"}
                     </p>
 
                     <p className="text-gray-500 text-sm mt-1">
@@ -71,12 +71,16 @@ export default function OrdersPage() {
 
                   <div className="text-right">
 
-                    <h3 className="text-3xl font-black text-orange-400">
-                      Rp{order.total.toLocaleString("id-ID")}
-                    </h3>
+                    <h2 className="text-4xl font-black text-orange-400">
+                      Rp{(
+                        order.total || 0
+                      ).toLocaleString(
+                        "id-ID"
+                      )}
+                    </h2>
 
                     <p className="text-gray-400 mt-1 capitalize">
-                      {order.paymentMethod}
+                      {order.paymentMethod || "-"}
                     </p>
 
                   </div>
@@ -91,7 +95,7 @@ export default function OrdersPage() {
                   </h3>
 
                   <p className="text-gray-300">
-                    {order.address}
+                    {order.address || "-"}
                   </p>
 
                 </div>
@@ -99,7 +103,7 @@ export default function OrdersPage() {
                 {/* ITEMS */}
                 <div className="space-y-4">
 
-                  {order.items.map((item, index) => (
+                  {order.items?.map((item, index) => (
 
                     <div
                       key={index}
@@ -107,25 +111,28 @@ export default function OrdersPage() {
                     >
 
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item?.image || ""}
+                        alt={item?.name || ""}
                         className="w-24 h-24 object-cover rounded-2xl"
                       />
 
                       <div className="flex-1">
 
                         <h3 className="font-bold text-lg mb-1">
-                          {item.name}
+                          {item?.name || "-"}
                         </h3>
 
                         <p className="text-gray-400">
-                          Jumlah: {item.quantity}
+                          Jumlah: {item?.quantity || 0}
                         </p>
 
                       </div>
 
                       <div className="text-orange-400 font-bold text-lg">
-                        Rp{(item.price * item.quantity).toLocaleString("id-ID")}
+                        Rp{(
+                          (item?.price || 0) *
+                          (item?.quantity || 0)
+                        ).toLocaleString("id-ID")}
                       </div>
 
                     </div>

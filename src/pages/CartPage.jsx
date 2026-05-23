@@ -689,17 +689,32 @@ export default function CartPage() {
 
         <button
           onClick={() => {
-
-           addOrder({
-  id: Date.now(),
+addOrder({
   customer: customerName,
-  phone,
-  address,
-  note,
-  paymentMethod,
-  items: cartItems,
-  total: totalPrice,
-  date: new Date().toLocaleString("id-ID"),
+  phone: phone,
+  address: address,
+  note: note,
+  paymentMethod:
+    paymentMethod,
+
+  total: Number(
+    totalPrice
+  ),
+
+  status: "Menunggu",
+
+  items: cartItems.map(
+    (item) => ({
+      name: item.name,
+      price: Number(
+        item.price
+      ),
+      quantity: Number(
+        item.quantity
+      ),
+      image: item.image,
+    })
+  ),
 })
             clearCart()
 
